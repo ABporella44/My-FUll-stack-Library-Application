@@ -1,0 +1,22 @@
+.hompage-cards{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin:40px;
+}
+
+.homepageEach-card{
+    max-width: 400px;
+    margin: 10px;
+}
+.cart-class{
+    display: flex;
+    flex-direction: row;
+    column-gap: 11px;
+    justify-content: center;
+    width: 120px;
+    border: apx solid;
+    align-items: center;
+    margin: 13px 47px;
+    background-color: darkorange
+}
