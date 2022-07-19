@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,65 +8,66 @@ import IconButton from '@mui/material/IconButton';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import {Card,CardHeader, Modal, TextField } from "@mui/material";
 import axios from 'axios';
+import { useState,useContext } from "react";
+import { globalState } from "./context";
 
-class Login extends React.Component{
-    constructor(props){
-     super(props);
-     this.state={
-       modalOpen:false,
-       nameError:false,
-       passwordError:false,
-       userName:"",
-       password:"",
-       errorMsg:null
-     }
+function Login (props){
+  const  userDetails = useContext(globalState)
+  const [initailState,setInitialState] = useState({
+      modalOpen:false,
+      nameError:false,
+      passwordError:false,
+      userName:"",
+      password:"",
+      errorMsg:null
     }
+  )
 
-    handleModalClose=()=>{
-      this.setState({modalOpen:false })
-    }
-
-    handleSubmit=()=>{
-       if(this.state.userName == ""){
-        this.setState({nameError:true})
+  const handleSubmit=()=>{
+    console.log(initailState.userName)
+    console.log(initailState.password)
+       if(initailState.userName == ""){
+        setInitialState({nameError:true})
        }
-       if(this.state.password.length <= 8 || this.state.password ==""){
-          this.setState({passwordError:true})
+       if(initailState.password.length <= 8 || initailState.password ==""){
+        setInitialState({passwordError:true})
        }
 
        
        let userData = {}
-       userData.username = this.state.userName
-       userData.password = this.state.password
+       userData.username = initailState.userName
+       userData.password = initailState.password
       
        if(userData.username !=="" && userData.password.length >= 8){
           axios.post("http://localhost:3002/api/login",userData)
           .then((res)=>{
+            const setName = userDetails[3]
+             setName(res.data.user)
+             console.log("hello world",res.data.msg)
             if(res.data.msg){
               localStorage.setItem('auth-token', res.data.token)
-              this.props.history.push({
+              props.history.push({
                 pathname:"/Navigation/homePage",
-                token:res.data.token,
-                user:res.data.user
               })
-            }    
+            }   
+       
           })
           .catch((error)=>{
             if(error){
-                this.setState({errorMsg:error.response.data.msg})
+              setInitialState({errorMsg:error.response.data.msg})
             }
           })
        }
 
     }
 
-    handleChange=(e)=>{
+    const handleChange=(e)=>{
        e.preventDefault()
-       this.setState({[e.target.name]:e.target.value,nameError:false,passwordError:false,errorMsg:null})
+       setInitialState({...initailState,[e.target.name]:e.target.value,nameError:false,passwordError:false,errorMsg:null})
     }
 
-    render(){
-    const style = {
+  
+  const style = {
             position: 'absolute',
             top: '40%',
             left: '50%',
@@ -77,10 +78,7 @@ class Login extends React.Component{
             boxShadow: 24,
             p: 4,
           };
-
-  
-
-    return(
+  return(
     <Box sx={{ flexGrow: 1,width:"100%"}}>
       <AppBar position="static">
         <Toolbar>
@@ -96,10 +94,10 @@ class Login extends React.Component{
           <Typography variant="h6" component="div" sx={{ flexGrow: 1,display:"flex" }}>
             SF Public Library
           </Typography>
-          <Button color="inherit" onClick={()=>this.setState({modalOpen:true})}>Register</Button>
+          <Button color="inherit" onClick={()=>setInitialState({modalOpen:true})}>Register</Button>
           <Modal
-          open={this.state.modalOpen}
-          onClose={this.handleModalClose}
+          open={initailState.modalOpen}
+          onClose={()=>setInitialState({modalOpen:false})}
           >
             <Box sx={style}>
                 <Typography variant="h6" component="h2">
@@ -112,7 +110,7 @@ class Login extends React.Component{
 
                 <Box component="div" sx={{display:"flex",flexDirection:"row",justifyContent:"space-around"}}>
                    <Button variant="contained" style={{marginTop:"20px"}}>SignUp</Button>
-                   <Button variant="contained" style={{marginTop:"20px"}} onClick={()=>this.setState({modalOpen:false})}>Close</Button>
+                   <Button variant="contained" style={{marginTop:"20px"}} onClick={()=>setInitialState({modalOpen:false})}>Close</Button>
                 </Box>
             </Box>
           </Modal> 
@@ -131,18 +129,18 @@ class Login extends React.Component{
                          </Typography>
                     </Box>
                     <Box>
-                          <TextField onChange={this.handleChange} name="userName" error={this.state.nameError} helperText="Please enter a Username" id="outlined-basic" fullWidth label="Email" variant="outlined" />
-                          <TextField onChange={this.handleChange} name="password" error={this.state.passwordError} helperText="Please enter a Valid Password"  id="outlined-basic" fullWidth label="password" variant="outlined"/>
+                          <TextField onChange={handleChange} name="userName" error={initailState.nameError} helperText="Please enter a Username" id="outlined-basic" fullWidth label="Email" variant="outlined" />
+                          <TextField onChange={handleChange} name="password" error={initailState.passwordError} helperText="Please enter a Valid Password"  id="outlined-basic" fullWidth label="password" variant="outlined"/>
                     </Box>
                    <Box component="div" sx={{display:"flex",flexDirection:"row",justifyContent:"space-between",minWidth:"70%"}}>
-                          <Button variant="contained" sx={{marginTop:"20px"}} onClick={this.handleSubmit}>Login</Button>
-                          <Button variant="contained" sx={{marginTop:"20px"}} onClick={()=>this.setState({modalOpen:true})}>Register</Button>
+                          <Button variant="contained" sx={{marginTop:"20px"}} onClick={handleSubmit}>Login</Button>
+                          <Button variant="contained" sx={{marginTop:"20px"}} onClick={()=>setInitialState({modalOpen:true})}>Register</Button>
                    </Box>
                    <Box>
-                        { this.state.errorMsg ? 
+                        { initailState.errorMsg ? 
                           <Box>
                             <Typography color="red" variant="h6" component="h6">
-                             {this.state.errorMsg}
+                             {initailState.errorMsg}
                             </Typography>
                           </Box> : <></>
                         }
@@ -154,5 +152,4 @@ class Login extends React.Component{
     </Box>
         )
     }
-}
 export default Login;

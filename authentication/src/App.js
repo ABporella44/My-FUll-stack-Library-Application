@@ -6,8 +6,6 @@ import DisplayBook from './LandingPage/prodcutDisplay';
 import Cart from './LandingPage/cart';
 import Homepage from './LandingPage/homePage';
 import Navigation from './LandingPage/navigation';
-import { useState } from 'react';
-import { globalState } from './authenticationPages/contextProvider';
 import React from 'react';
 import CartProvider from './authenticationPages/contextProvider';
 
@@ -16,6 +14,7 @@ function App() {
   <CartProvider>
      <BrowserRouter >
         <Route exact path='/' component={Login}/>
+        <Route exact path='/Login' component={Login}/>
         <Route path="/Navigation" component={Navigation}/>
      <Switch >
         <Route path='/Navigation/displayBook' component={DisplayBook}/>

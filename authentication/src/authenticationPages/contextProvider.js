@@ -5,14 +5,26 @@ import { globalState } from "./context";
 
 const CartProvider = ({children})=>{
     const [cartItems,setCartItem] = useState([])
-   
+    const [userName,setName] = useState("")
+
     const setCartitems =(item)=>{
-     setCartItem((prevState)=>{
-        return [...prevState,item]
-     })
+        if(Object.keys(item).length === 0){
+            setCartItem(()=>{
+                return []
+            })
+        }else{
+            setCartItem((prevState)=>{
+                return [...prevState,item]
+             })
+        }
     }
+
+    const setUserName = (item)=>{
+      setName(item)
+    }
+
     return(
-        <globalState.Provider value={[cartItems,setCartitems]}>
+        <globalState.Provider value={[cartItems,userName,setCartitems,setUserName ]}>
            {children}
         </globalState.Provider>
     )
